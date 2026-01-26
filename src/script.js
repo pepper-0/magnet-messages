@@ -1,9 +1,57 @@
+// all possible words on the magnets
+const adjectives = ["large", "miniscule", "pungent", "iridescent", "positive", "accessible", "ritual", "surprise", "elaborate", "thin", "serious"]
+const verbs = ["whisper", "speak", "told", "breathe", "see", "observed", "slept", "sing", "consume", "ate", "twitch", "please", "rise", "progress", "think"]
+const nouns = ["puppy", "bear", "cup", "quarter", "wage", "sight", "sea", "sight", "herb", "humanity", "prejudice", "pride", "stuff", "truth", "enemy", "love", "share", "joke", "volunteer"]
+const standard = ["the", "he", "his", "she", "her", "they", "them", "not", "am", "no", "to", "at", "is", "of", "are", "or", "be", "of", "as", "did"]
+
 const container = document.querySelector("#dragspace");
+var wordsPerCategory = 5;
 
 // upon refreshing/opening the fridge screen
-var magnets = document.querySelectorAll("button"); // get all magnets
-for (magnet of magnets) {
-    dragElement(magnet); // make each magnet draggable 
+generateWords();
+
+// randomly generating the words for the next set of magnets
+function generateWords() {
+    console.log("called generate words");
+    var magnets = [];
+    // for (word of standard) {
+    //     magnets.push(word);
+    // }
+    console.log("hellooooo");
+    // randomly pick N words of each category to be added to magnets
+    for (let i = 0; i < wordsPerCategory; i++) {
+        var word = adjectives[Math.floor(Math.random() * adjectives.length)];
+        magnets.push(word);
+        word = verbs[Math.floor(Math.random() * verbs.length)];
+        magnets.push(word);
+        word = nouns[Math.floor(Math.random() * nouns.length)];
+        magnets.push(word);
+        word = standard[Math.floor(Math.random() * standard.length)];
+        magnets.push(word);
+    }
+
+    generateMagnets(magnets);
+}
+
+// generate the magnet elements
+function generateMagnets(magnets) {
+    console.log("called generate magnets");
+
+    for (magnet of magnets) {
+        // create the element
+        const item = document.createElement("button");
+
+        // make the item into a proper magnet based on class and stuff
+        item.id = "magnet"
+        item.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50"
+        item.innerHTML = magnet;
+        // item.style.top = (container.offsetHeight) / 2 + "px"; 
+            // need to fix later
+        item.style.left = (container.offsetWidth) / 2 + "px";
+
+        container.appendChild(item); // add to container
+        dragElement(item); // make each magnet draggable 
+    }
 }
 
 function dragElement(element) {
