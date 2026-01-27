@@ -5,7 +5,8 @@ const nouns = ["puppy", "bear", "cup", "quarter", "wage", "sight", "sea", "sight
 const standard = ["the", "he", "his", "she", "her", "they", "them", "not", "am", "no", "to", "at", "is", "of", "are", "or", "be", "of", "as", "did"]
 
 const container = document.querySelector("#dragspace");
-var wordsPerCategory = 5;
+var wordsPerCategory = 1;
+var magnets = [];
 
 // upon refreshing/opening the fridge screen
 generateWords();
@@ -13,49 +14,45 @@ generateWords();
 // randomly generating the words for the next set of magnets
 function generateWords() {
     console.log("called generate words");
-    var magnets = [];
-    // for (word of standard) {
-    //     magnets.push(word);
-    // }
-    console.log("hellooooo");
+    var words = [];
+    
     // randomly pick N words of each category to be added to magnets
     for (let i = 0; i < wordsPerCategory; i++) {
         var word = adjectives[Math.floor(Math.random() * adjectives.length)];
-        magnets.push(word);
+        words.push(word);
         word = verbs[Math.floor(Math.random() * verbs.length)];
-        magnets.push(word);
+        words.push(word);
         word = nouns[Math.floor(Math.random() * nouns.length)];
-        magnets.push(word);
+        words.push(word);
         word = standard[Math.floor(Math.random() * standard.length)];
-        magnets.push(word);
+        words.push(word);
     }
 
-    generateMagnets(magnets);
+    generateMagnets(words);
 }
 
 // generate the magnet elements
-function generateMagnets(magnets) {
+function generateMagnets(words) {
     console.log("called generate magnets");
 
-    for (magnet of magnets) {
+    for (word of words) {
         // create the element
         const item = document.createElement("button");
 
         // make the item into a proper magnet based on class and stuff
         item.id = "magnet"
         item.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50"
-        item.innerHTML = magnet;
-        // item.style.top = (container.offsetHeight) / 2 + "px"; 
-            // need to fix later
-        item.style.left = (container.offsetWidth) / 2 + "px";
+        item.innerHTML = word;
 
         container.appendChild(item); // add to container
+        magnets.push(item);
         dragElement(item); // make each magnet draggable 
     }
 }
 
 function dragElement(element) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    var original3, original4;
     // odd = x, even = y. 1 & 2 = numerical change in position, 3 & 4 = current position
     element.onmousedown = dragMouseDown; // call dragMouseDown function once input received
 
@@ -66,6 +63,9 @@ function dragElement(element) {
         // get mouse cursor position
         pos3 = e.clientX;
         pos4 = e.clientY;
+        original3 = element.offsetLeft;
+        original4 = element.offsetTop;
+
         document.onmouseup = closeDragElement; // call closeDragElement function to stop movement
         document.onmousemove = elementDrag; // call elementDrag function to move the element properly
     }
@@ -84,11 +84,40 @@ function dragElement(element) {
         element.style.top = (element.offsetTop - pos2) + "px";
         element.style.left = (element.offsetLeft - pos1) + "px";
 
+        // collision detection
+        if (checkCollision(element))
+            element.className = "absolute bg-red-100 p-2 border-amber-600 border-3 rounded-md";
+        else 
+            element.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50";
+
     }
 
     function closeDragElement() {
+        // collision detection 
+        if (checkCollision(element)) {
+            element.style.top = original3;
+            element.style.left = original4;
+        }
+
         // stop moving upon release of mouse
         document.onmouseup = null;
         document.onmousemove = null;
     }
+}
+
+function checkCollision(element) {
+    console.log("collision checking");
+    // check if element overlaps with any of magnets
+    for (magnet of magnets) {
+        // if (element.offsetLeft > magnet.offsetLeft) { // x collides
+        //     console.log("test x is to right");
+        //     return true;
+        // }
+        if (element.offsetLeft > magnet.offsetLeft && element.offsetLeft < (magnet.offsetLeft + magnet.offsetWidth) && element.offsetTop > magnet.offsetTop && element.offsetTop < (magnet.offsetTop + magnet.offsetHeight)) { // x collides
+            console.log("within");
+            return true;
+        }
+
+    }
+    return false;
 }
