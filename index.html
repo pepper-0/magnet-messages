@@ -8,12 +8,20 @@
     <script defer src="./src/script.js"></script>
 </head>
 
-<body id = "dragspace" class = "h-screen w-screen ">
-    <div id = "start-screen" class = "absolute bg-gray-100 z-100 w-3/5 bg-blue-200 border-2 border-solid border-black font-serif">
-        <div class = "flex w-full justify-end">
-            <button class = "p-2 w-12 hover:bg-gray-300">—</button>
-            <button class = "p-2 w-12 hover:bg-gray-300">▭</button>
-            <button id = "close" class = "p-2 w-12 hover:bg-red-300">X</button>
+<body id = "dragspace" class = "h-screen w-screen">
+    <div class = "flex w-full justify-end">
+         <div id = "refresh" class = "h-18 w-18 bg-gray-200">
+            ref
+        </div>
+        <div id = "settings" class = "h-18 w-18 bg-gray-200">
+            set
+        </div>
+    </div>
+    
+
+    <div id = "start-screen" class = "absolute left-1/4 top-1/4 bg-gray-200 z-100 w-1/2 border-2 border-solid border-black rounded-md font-serif">
+        <div id = "start-nav" class = "flex w-full justify-end ">
+            <button id = "close-start" class = "m-1 p-1 w-12 bg-gray-300 hover:bg-red-200 rounded-sm">X</button>
         </div>
         <div class = "p-4">
             this is magnet messages!
@@ -24,5 +32,16 @@
             <br/> made with <3 by jana (pepper-0)! 
         </div>
     </div>
+
+    <div id = "settings-screen" class = "absolute left-1/4 top-1/4 bg-gray-200 z-100 w-1/2 border-2 border-solid border-black rounded-md font-serif">
+        <div id = "start-nav" class = "flex w-full justify-end ">
+            <button id = "close-settings" class = "m-1 p-1 w-12 bg-gray-300 hover:bg-red-200 rounded-sm">X</button>
+        </div>
+        <div class = "p-4">
+            # of words generated: 
+        </div>
+
+    </div>
+    
 </body>
 </html>

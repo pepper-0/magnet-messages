@@ -3,11 +3,28 @@ const adjectives = ["large", "miniscule", "pungent", "iridescent", "positive", "
 const verbs = ["whisper", "speak", "told", "breathe", "see", "observed", "slept", "sing", "consume", "ate", "twitch", "please", "rise", "progress", "think"]
 const nouns = ["puppy", "bear", "cup", "quarter", "wage", "sight", "sea", "sight", "herb", "humanity", "prejudice", "pride", "stuff", "truth", "enemy", "love", "share", "joke", "volunteer"]
 const standard = ["the", "he", "his", "she", "her", "they", "them", "not", "am", "no", "to", "at", "is", "of", "are", "or", "be", "of", "as", "did"]
+const punctuation = [".", ",", "!", "?"];
 
 const container = document.querySelector("#dragspace");
 
+const refreshButton = document.getElementById("refresh");
+refreshButton.addEventListener("click", generateWords);
+
+const settingsButton = document.getElementById("settings");
+settingsButton.addEventListener("click", toggleSettingsScreen);
+
+const settingsScreen = document.getElementById("settings-screen");
+settingsScreen.style.display = "none";
+
+const closeSettings = document.getElementById("close-settings");
+closeSettings.addEventListener("click", toggleSettingsScreen);
+dragElement(settingsScreen);
+
 const startScreen = document.getElementById("start-screen");
+const closeButton = document.getElementById("close-start");
+
 dragElement(startScreen);
+closeButton.addEventListener("click", closeScreen);
 
 var wordsPerCategory = 1;
 var magnets = [];
@@ -17,6 +34,9 @@ generateWords();
 
 // randomly generating the words for the next set of magnets
 function generateWords() {
+    // be sure to clear the previous set of words
+    clearWords();
+
     console.log("called generate words");
     var words = [];
     
@@ -30,9 +50,21 @@ function generateWords() {
         words.push(word);
         word = standard[Math.floor(Math.random() * standard.length)];
         words.push(word);
+        word = punctuation[Math.floor(Math.random() * punctuation.length)];
+        words.push(word);
+
     }
 
     generateMagnets(words);
+}
+
+// clear magnets currently in array
+function clearWords() {
+    for (magnet of magnets) {
+        container.removeChild(magnet);
+    }
+    // clear items
+    magnets = [];
 }
 
 // generate the magnet elements
@@ -45,7 +77,7 @@ function generateMagnets(words) {
 
         // make the item into a proper magnet based on class and stuff
         item.id = "magnet"
-        item.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50"
+        item.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md font-serif hover:bg-yellow-50"
         item.innerHTML = word;
 
         container.appendChild(item); // add to container
@@ -54,6 +86,7 @@ function generateMagnets(words) {
     }
 }
 
+// element dragging function, call to make draggable
 function dragElement(element) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     var original3, original4;
@@ -114,6 +147,7 @@ function dragElement(element) {
     }
 }
 
+// checks for collisions of magnets
 function checkCollision(element) {
     console.log("collision checking");
     // check if element overlaps with any of magnets
@@ -128,4 +162,23 @@ function checkCollision(element) {
 
     }
     return false;
+}
+
+// closes start screen
+function closeScreen(){
+    startScreen.style.display = "none";
+}
+
+// manage event screen
+function toggleSettingsScreen() {
+    console.log("settings button toggled");
+    if (settingsScreen.style.display == "block") {
+        console.log("previously absolute");
+        settingsScreen.style.display = "none";
+    } else if (settingsScreen.style.display == "none") {
+        console.log("previously none");
+        settingsScreen.style.display = "block";
+    } else {
+        console.log("bro");
+    }
 }
