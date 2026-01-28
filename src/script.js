@@ -5,6 +5,10 @@ const nouns = ["puppy", "bear", "cup", "quarter", "wage", "sight", "sea", "sight
 const standard = ["the", "he", "his", "she", "her", "they", "them", "not", "am", "no", "to", "at", "is", "of", "are", "or", "be", "of", "as", "did"]
 
 const container = document.querySelector("#dragspace");
+
+const startScreen = document.getElementById("start-screen");
+dragElement(startScreen);
+
 var wordsPerCategory = 1;
 var magnets = [];
 
@@ -85,19 +89,24 @@ function dragElement(element) {
         element.style.left = (element.offsetLeft - pos1) + "px";
 
         // collision detection
-        if (checkCollision(element))
-            element.className = "absolute bg-red-100 p-2 border-amber-600 border-3 rounded-md";
-        else 
-            element.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50";
-
+        if (element.id == "magnet") {
+            if (checkCollision(element))
+                element.className = "absolute bg-red-100 p-2 border-amber-600 border-3 rounded-md";
+            else 
+                element.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50";
+        }
     }
 
     function closeDragElement() {
         // collision detection 
         if (checkCollision(element)) {
-            element.style.top = original3;
-            element.style.left = original4;
+            element.style.left = original3 + "px";
+            element.style.top = original4 + "px";
         }
+        
+        // ensure color reset
+        if (element.id == "magnet")
+            element.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50";
 
         // stop moving upon release of mouse
         document.onmouseup = null;
@@ -109,11 +118,10 @@ function checkCollision(element) {
     console.log("collision checking");
     // check if element overlaps with any of magnets
     for (magnet of magnets) {
-        // if (element.offsetLeft > magnet.offsetLeft) { // x collides
-        //     console.log("test x is to right");
-        //     return true;
-        // }
-        if (element.offsetLeft > magnet.offsetLeft && element.offsetLeft < (magnet.offsetLeft + magnet.offsetWidth) && element.offsetTop > magnet.offsetTop && element.offsetTop < (magnet.offsetTop + magnet.offsetHeight)) { // x collides
+        if (element.offsetLeft > magnet.offsetLeft && 
+            element.offsetLeft < (magnet.offsetLeft + magnet.offsetWidth) && 
+            element.offsetTop > magnet.offsetTop && 
+            element.offsetTop < (magnet.offsetTop + magnet.offsetHeight)) { // x collides
             console.log("within");
             return true;
         }
