@@ -5,8 +5,14 @@ const nouns = ["puppy", "bear", "cup", "quarter", "wage", "sight", "sea", "sight
 const standard = ["the", "he", "his", "she", "her", "they", "them", "not", "am", "no", "to", "at", "is", "of", "are", "or", "be", "of", "as", "did"]
 const punctuation = [".", ",", "!", "?"];
 
+// other global variables
+var wordsPerCategory = 1;
+var magnets = [];
+
+// management for magnets
 const container = document.querySelector("#dragspace");
 
+// additional fancy buttons
 const refreshButton = document.getElementById("refresh");
 refreshButton.addEventListener("click", generateWords);
 
@@ -18,16 +24,22 @@ settingsScreen.style.display = "none";
 
 const closeSettings = document.getElementById("close-settings");
 closeSettings.addEventListener("click", toggleSettingsScreen);
-dragElement(settingsScreen);
+//dragElement(settingsScreen);
 
+var slider = document.getElementById("slider-range");
+var sliderValue = document.getElementById("slider-value");
+
+slider.oninput = function() {
+    wordsPerCategory = this.value;
+    sliderValue.innerHTML = this.value * 5;
+}
+
+// start panel
 const startScreen = document.getElementById("start-screen");
 const closeButton = document.getElementById("close-start");
 
 dragElement(startScreen);
 closeButton.addEventListener("click", closeScreen);
-
-var wordsPerCategory = 1;
-var magnets = [];
 
 // upon refreshing/opening the fridge screen
 generateWords();
@@ -70,6 +82,8 @@ function clearWords() {
 // generate the magnet elements
 function generateMagnets(words) {
     console.log("called generate magnets");
+    var currentX = 5; // where on x axis to start spawning magnets 
+    var currentY = 5; // where to y axis to start spawning magnets
 
     for (word of words) {
         // create the element
@@ -77,11 +91,20 @@ function generateMagnets(words) {
 
         // make the item into a proper magnet based on class and stuff
         item.id = "magnet"
-        item.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md font-serif hover:bg-yellow-50"
+        item.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md font-serif hover:bg-yellow-50";
         item.innerHTML = word;
 
         container.appendChild(item); // add to container
         magnets.push(item);
+
+        // calculate where to place it 
+        item.style.left = currentX + "px";
+        item.style.top = currentY + "px";
+        console.log("im gonna keep myself sane and not do this at 1 am ");
+
+        // add to x + padding of course
+        currentX += item.offsetWidth + 5;
+
         dragElement(item); // make each magnet draggable 
     }
 }
@@ -90,6 +113,7 @@ function generateMagnets(words) {
 function dragElement(element) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     var original3, original4;
+    var originalZPos = element.style.zIndex;
     // odd = x, even = y. 1 & 2 = numerical change in position, 3 & 4 = current position
     element.onmousedown = dragMouseDown; // call dragMouseDown function once input received
 
@@ -102,6 +126,9 @@ function dragElement(element) {
         pos4 = e.clientY;
         original3 = element.offsetLeft;
         original4 = element.offsetTop;
+
+        // bring up to top 
+        element.style.zIndex = "99"; // temp 
 
         document.onmouseup = closeDragElement; // call closeDragElement function to stop movement
         document.onmousemove = elementDrag; // call elementDrag function to move the element properly
@@ -141,6 +168,9 @@ function dragElement(element) {
         if (element.id == "magnet")
             element.className = "absolute bg-yellow-100 p-2 border-amber-600 border-3 rounded-md hover:bg-yellow-50";
 
+        // reset z index so it doesn't get all messy
+        element.style.zIndex = originalZPos;
+
         // stop moving upon release of mouse
         document.onmouseup = null;
         document.onmousemove = null;
@@ -151,16 +181,25 @@ function dragElement(element) {
 function checkCollision(element) {
     console.log("collision checking");
     // check if element overlaps with any of magnets
+    var elm = element.getBoundingClientRect();
     for (magnet of magnets) {
-        if (element.offsetLeft > magnet.offsetLeft && 
-            element.offsetLeft < (magnet.offsetLeft + magnet.offsetWidth) && 
-            element.offsetTop > magnet.offsetTop && 
-            element.offsetTop < (magnet.offsetTop + magnet.offsetHeight)) { // x collides
-            console.log("within");
+        if (element == magnet)
+            continue;
+
+        var mag = magnet.getBoundingClientRect();
+        // issue: one false will not make any effect because it being violated will still be skipped as long as smth else is true
+        // && doesn't work because all these conditions can't be fulfilled in this case
+        if (!(elm.right < mag.left ||
+            elm.left > mag.right ||
+            elm.bottom < mag.top ||
+            elm.top > mag.bottom
+        )) { // x does not collide
+            console.log("outside");
             return true;
         }
 
     }
+    console.log("inside");
     return false;
 }
 
